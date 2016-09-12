@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>!!!</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+  <style type="text/css">
+    .widget-image-wrapper { 
+      box-sizing: border-box;
+      overflow: hidden;
+      padding: 0;
+      display: flex;
+      margin: 0;
+      padding: 0;
+    }
+    .widget-image {
+      width: 200px;
+      height: 200px;
+      background-size: cover;
+      background-position: 50%;
+      background-repeat: no-repeat;
+      box-sizing: inherit;
+      flex-shrink: 0;   /* makes images stay same width */
+      -webkit-transition: background-image 2s;   /* nice transition */
+      transition: background-image 2s;
+      margin: 0;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <section class="widget-image-wrapper"></section>
+
+  <script>
+    
+    const instagramAccessToken = "428444439.85a6c40.7e28bc602d4f40baba6a0f97d8f97dad"
+    const instagramUrl = "https://api.instagram.com/v1/users/self/media/recent/?access_token=428444439.85a6c40.7e28bc602d4f40baba6a0f97d8f97dad" 
+
+    function pullImages() {
+      $.ajax({
+        type: "GET",
+        dataType: "jsonp",
+        cache: false,
+        url: instagramUrl,
+        success: function(data) {
+          const imageUrls = data.data.map(i => i.images.low_resolution.url);
+
+          createImageDivs(imageUrls);
+          setInterval(() => updateImageDivs(imageUrls), 4000);
+        }
+      });
+    }
+
+    function createImageDivs(imgs){
+      for (let i = 0; i < imgs.length; i++) {
+        $('.widget-image-wrapper').append('<div class="widget-image" id="iw' + i+ '"></div>');
+        $("#iw" + i).css("background-image", 'url(' + imgs[i] + ')');
+      }
+    }
+
+    function updateImageDivs(imgs) {
+      const numIndex = _.range(20);
+      const numIndexShuffle = _.shuffle(numIndex);
+      _.each(numIndex, function(i){
+        time = Math.random()*2000; 
+        setTimeout(() => $("#iw" + numIndexShuffle[i]).css('background-image', 'url(' + imgs[i] + ')'), time);
+      });
+    } 
+
+    pullImages();
+
+  </script>
+</body>
+</html>
